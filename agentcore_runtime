@@ -1,0 +1,20 @@
+import boto3
+
+REGION = "eu-north-1"
+control_client = boto3.client("bedrock-agentcore-control", region_name=REGION)
+
+# Create an AgentCore Runtime backed by an ECR Container
+runtime_response = control_client.create_agent_runtime(
+    agentRuntimeName="ecr-backend-runtime",
+    description="Agent runtime hosted using custom ECR image",
+    agentRuntimeArtifact={
+        "containerImage": {
+            "containerImageUri": "329599625033.dkr.ecr.eu-north-1.amazonaws.com/my-backend-agent:latest"
+        }
+    },
+    roleArn="arn:aws:iam::329599625033:role/service-role/AmazonBedrockAgentCoreRuntimeDefaultServiceRole-cmq34",
+    networkConfiguration={"networkMode": "PUBLIC"}
+)
+
+runtime_arn = runtime_response["agentRuntimeArn"]
+print(f"[+] AgentCore Runtime created! ARN: {runtime_arn}")
